@@ -46,6 +46,7 @@ files = read_folder.files
 ctx.load(files)
 ctx.execute_query()
 
+
 for f in files:
     if f.properties["Name"] == 'Bridge_Report_Data.xlsx':
         file = f
@@ -55,20 +56,24 @@ response = file.open_binary(ctx, file.serverRelativeUrl)
 bytes_file_obj = io.BytesIO()
 bytes_file_obj.write(response.content)
 bytes_file_obj.seek(0)
-page = 0
-
 
 ####Real data we want to categorize####
 report_df= pd.read_excel(bytes_file_obj,sheet_name='History')
-
 masterlist_df= pd.read_excel(bytes_file_obj,sheet_name='Masterlist')
 information_df= pd.read_excel(bytes_file_obj,sheet_name='Information')
 sectiona_df= pd.read_excel(bytes_file_obj,sheet_name='Section A')
 
-
 ####Training Data####
-url = 'Training Data 2.xlsx' #Add your own specific file path
-training_df = pd.read_excel(url) #Can also filter if data is part of a wider dataset
+for f in files:
+    if f.properties["Name"] == 'Training Data.xlsx':
+        file = f
+        break
+
+response = file.open_binary(ctx, file.serverRelativeUrl)
+bytes_file_obj = io.BytesIO()
+bytes_file_obj.write(response.content)
+bytes_file_obj.seek(0)
+training_df = pd.read_excel(bytes_file_obj) #Can also filter if data is part of a wider dataset
 
 ####Create Machine Learning####
 def my_NLP(report_df,training_df):
